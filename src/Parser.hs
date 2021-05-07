@@ -3,7 +3,7 @@
 
 
 module Parser where
-import Text.Megaparsec hiding (State)
+import Text.Megaparsec hiding (State, parse)
 import Text.Megaparsec.Char
 import qualified  Text.Megaparsec.Char.Lexer as L
 import Data.Void
@@ -55,6 +55,7 @@ pItem = lexeme pSymbolNoL <|>
 pItemNoLex :: Parser Sexp
 pItemNoLex = pSymbolNoL  <|> 
              pOpNoL      <|>
+             pStrPrim    <|>
              pNumNoL
 
 
@@ -63,10 +64,46 @@ pItemList = SList <$> pItemNoLex `sepBy` char ' '
 
 pParens = between (char '(') (char ')') 
 
+pGeeseEyes = between (char '"') (char '"') 
+
+
 pSymbolList :: Parser Sexp
 pSymbolList = pParens pItemList
 
+pStrPrim :: Parser Sexp
+pStrPrim = Sym <$> pGeeseEyes (many letterChar)
 
+pSexp :: Parser Sexp
+pSexp = pNumNoL <|>
+        pStrPrim <|>
+        pSymbolList 
+
+-- After the break:
+-- finish rewriting parse 
+-- then IDK probably finish up
+-- do the assIgnment
+
+parseExprBody :: [Sexp] -> [Expr]
+parseExprBody = foldr ((:) . parse) [] 
+
+parse :: Sexp -> Expr 
+parse (SNum x)     = (Lit x)
+parse (Sym s)   = (Str s)
+parse (SList (x:xs))  = case x of
+  (Sym "+") -> Plus $ parseExprBody xs 
+  (Sym "-") -> Minus $ parseExprBody xs
+  (Sym "*") -> Mult $ parseExprBody xs
+  (Sym  x)  -> Mult $ parseExprBody xs
+
+testRunParser :: String -> Expr
+testRunParser inp = case (parseMaybe pSexp inp) of
+  (Just x) -> parse x
+  Nothing  -> parse (Sym "damn")
+
+testRunEval :: String -> Float
+testRunEval = eval . testRunParser
+
+{-
 p :: Parser Expr
 p = do 
   char '('
@@ -83,3 +120,4 @@ test = do
   let y = parseMaybe p x
   putStrLn $ show $ (eval (fromMaybe (Lit 3) y) [("hi", (Lit 3))])
   test
+-}
