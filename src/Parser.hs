@@ -100,7 +100,7 @@ testRunParser inp = case parseMaybe pSexp inp of
   (Just x) -> parse x
   Nothing  -> parse (Sym "damn")
 
-testRunEval :: String -> Float
+testRunEval :: String -> LVal 
 testRunEval = eval . testRunParser
 
 {-

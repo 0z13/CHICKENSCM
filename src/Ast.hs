@@ -17,6 +17,6 @@ data Expr
 data LVal 
       = LFloat Float
       | LStr String
+  deriving Show
 
-instance Functor LVal where
 
