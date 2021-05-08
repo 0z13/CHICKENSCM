@@ -34,7 +34,10 @@ primMinus ((Str x):xs) (LFloat r) = error "Minusing strings? What do YOU suggest
 primAdd :: [Expr] -> LVal -> LVal
 primAdd [] r           = r 
 primAdd ((Str x):xs) (LFloat r) = error "Adding strings? What do YOU suggest should happen?" 
-primAdd ((Lit x):xs) (LFloat r) = primMult xs (LFloat $ r+x)
+primAdd ((Lit x):xs) (LFloat r) = primAdd xs (LFloat $ r+x)
+primAdd ((w@(Plus x):xs)) (LFloat r) = let (LFloat g) = eval w in primAdd xs (LFloat (r + g))
+primAdd ((w@(Minus x):xs)) (LFloat r) = eval w
+primAdd ((w@(Mult x):xs)) (LFloat r) = eval w
 
 primMult :: [Expr] -> LVal -> LVal
 primMult [] r           = r 

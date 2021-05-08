@@ -56,7 +56,8 @@ pItemNoLex :: Parser Sexp
 pItemNoLex = pSymbolNoL  <|> 
              pOpNoL      <|>
              pStrPrim    <|>
-             pNumNoL
+             pNumNoL     <|>
+             pSymbolList 
 
 
 pItemList :: Parser Sexp
