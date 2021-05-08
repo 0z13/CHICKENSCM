@@ -13,3 +13,10 @@ data Expr
         | Minus [Expr] 
         | Mult [Expr]  
   deriving Show
+
+data LVal 
+      = LFloat Float
+      | LStr String
+
+instance Functor LVal where
+

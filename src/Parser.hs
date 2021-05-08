@@ -87,8 +87,8 @@ parseExprBody :: [Sexp] -> [Expr]
 parseExprBody = foldr ((:) . parse) [] 
 
 parse :: Sexp -> Expr 
-parse (SNum x)     = (Lit x)
-parse (Sym s)   = (Str s)
+parse (SNum x)     = Lit x
+parse (Sym s)   = Str s
 parse (SList (x:xs))  = case x of
   (Sym "+") -> Plus $ parseExprBody xs 
   (Sym "-") -> Minus $ parseExprBody xs
@@ -96,7 +96,7 @@ parse (SList (x:xs))  = case x of
   (Sym  x)  -> Mult $ parseExprBody xs
 
 testRunParser :: String -> Expr
-testRunParser inp = case (parseMaybe pSexp inp) of
+testRunParser inp = case parseMaybe pSexp inp of
   (Just x) -> parse x
   Nothing  -> parse (Sym "damn")
 

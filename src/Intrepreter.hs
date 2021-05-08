@@ -17,7 +17,7 @@ eval (Minus x y) env     = let x' = eval x env
 
 -- I think i will do this with monad transformers tomorrow!
 -- We need TYPES 
-eval :: Expr -> Float
-eval (Lit n) = n
-eval (Plus xs) = sum $ (map eval) xs
-eval _       = eval $ (Lit 3.0)
+eval :: Expr -> LVal 
+eval (Lit n) = LFloat n 
+eval (Plus xs) = LFloat $ sum $ map eval xs
+eval _       = LFloat 3.0
