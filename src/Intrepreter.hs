@@ -19,27 +19,34 @@ eval (Minus x y) env     = let x' = eval x env
 -- We need TYPES 
 --
 -- NVM transformers another time 
-eval :: Expr -> LVal 
-eval (Lit n) = LFloat n 
-eval (Plus xs) =  primAdd xs (LFloat 0)
-eval (Mult xs) =  primMult xs (LFloat 1)
-eval (Minus xs) = primMinus xs (LFloat 0)
-eval _       = LFloat 3.0
+eval :: Expr -> Env -> LVal 
+eval (Lit n) e = LFloat n 
+eval (Plus xs) e =  primAdd xs (LFloat 0) 
+eval (Mult xs) e =  primMult xs (LFloat 1) 
+eval (Minus xs) e = primMinus xs (LFloat 0) 
+eval _       e = LFloat 3.0
 
-primMinus :: [Expr] -> LVal -> LVal
-primMinus [] r           = r 
-primMinus ((Lit x):xs) (LFloat r) = primAdd xs (LFloat $ r-x)
-primMinus ((Str x):xs) (LFloat r) = error "Minusing strings? What do YOU suggest should happen?" 
+primMinus :: [Expr] -> Env -> LVal -> LVal
+primMinus [] e r           = r 
+primMinus ((Lit x):xs) e (LFloat r) = primAdd xs (LFloat $ r-x)
+primMinus ((Str x):xs) e (LFloat r) = error "Minusing strings? What do YOU suggest should happen?" 
+primMinus ((w@(Plus x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primMinus xs e (LFloat (r - g))
+primMinus ((w@(Minus x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primMinus xs e (LFloat (r - g))
+primMinus ((w@(Mult x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primMinus xs e (LFloat (r - g))
 
-primAdd :: [Expr] -> LVal -> LVal
-primAdd [] r           = r 
-primAdd ((Str x):xs) (LFloat r) = error "Adding strings? What do YOU suggest should happen?" 
-primAdd ((Lit x):xs) (LFloat r) = primAdd xs (LFloat $ r+x)
-primAdd ((w@(Plus x):xs)) (LFloat r) = let (LFloat g) = eval w in primAdd xs (LFloat (r + g))
-primAdd ((w@(Minus x):xs)) (LFloat r) = eval w
-primAdd ((w@(Mult x):xs)) (LFloat r) = eval w
 
-primMult :: [Expr] -> LVal -> LVal
+primAdd :: [Expr] -> Env -> LVal -> LVal
+primAdd [] e r           = r 
+primAdd ((Str x):xs) e (LFloat r) = error "Adding strings? What do YOU suggest should happen?" 
+primAdd ((Lit x):xs) e (LFloat r) = primAdd xs  e (LFloat $ r+x)
+primAdd ((w@(Plus x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primAdd xs e (LFloat (r + g))
+primAdd ((w@(Minus x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primAdd xs e (LFloat (r + g))
+primAdd ((w@(Mult x):xs)) e (LFloat r) = let (LFloat g) = eval w e in primAdd xs e (LFloat (r + g))
+
+primMult :: [Expr] -> Env -> LVal -> LVal
 primMult [] r           = r 
 primMult ((Str x):xs) (LFloat r) = error "Multiplying strings? What do YOU suggest should happen?" 
-primMult ((Lit x):xs) (LFloat r) = primMult xs (LFloat $ r*x)
+primMult ((w@(Plus x):xs)) (LFloat r) = let (LFloat g) = eval w in primMult xs (LFloat (r * g))
+primMult ((w@(Minus x):xs)) (LFloat r) = let (LFloat g) = eval w in primMult xs (LFloat (r * g))
+primMult ((w@(Mult x):xs)) (LFloat r) = let (LFloat g) = eval w in primMult xs (LFloat (r * g))
+primMult ((Lit x):xs) (LFloat r) = primMult xs (LFloat $ r * x)
