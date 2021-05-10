@@ -101,8 +101,9 @@ testRunParser inp = case parseMaybe pSexp inp of
   (Just x) -> parse x
   Nothing  -> parse (Sym "damn")
 
+
 testRunEval :: String -> LVal 
-testRunEval = eval . testRunParser
+testRunEval xs = let b = testRunParser xs in eval b  [("h", Lit 3)] 
 
 {-
 p :: Parser Expr
