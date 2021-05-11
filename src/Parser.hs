@@ -89,18 +89,17 @@ parseExprBody = foldr ((:) . parse) []
 
 parse :: Sexp -> Expr 
 parse (SNum x)     = Lit x
-parse (Sym s)   = Str s
+parse (Sym s)   = Id s
 parse (SList (x:xs))  = case x of
   (Sym "+") -> Plus $ parseExprBody xs 
   (Sym "-") -> Minus $ parseExprBody xs
   (Sym "*") -> Mult $ parseExprBody xs
-  (Sym  x)  -> Mult $ parseExprBody xs
+  (Sym  "let")  -> Abs $ parseExprBody xs
 
 testRunParser :: String -> Expr
 testRunParser inp = case parseMaybe pSexp inp of
   (Just x) -> parse x
   Nothing  -> parse (Sym "damn")
-
 
 testRunEval :: String -> LVal 
 testRunEval xs = let b = testRunParser xs in eval b  [("h", Lit 3)] 

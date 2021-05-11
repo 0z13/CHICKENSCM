@@ -9,14 +9,17 @@ type Env = [(String, Expr)]
 data Expr 
         = Lit Float 
         | Str String 
+        | Id String
         | Plus [Expr]
         | Minus [Expr] 
         | Mult [Expr]  
+        | Abs [Expr]
   deriving Show
 
 data LVal 
       = LFloat Float
       | LStr String
+      | FunVal Env String Expr
   deriving Show
 -- gah
 
