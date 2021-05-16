@@ -14,6 +14,7 @@ data Expr
         | Minus [Expr] 
         | Mult [Expr]  
         | Abs [Expr]
+        | Cond Expr Expr Expr
   deriving Show
 
 data LVal 
