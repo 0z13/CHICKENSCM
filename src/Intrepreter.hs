@@ -25,8 +25,15 @@ eval (Id n) e = case lookup n e of
    Nothing  -> error "fuck"
 eval (Plus xs) e =  primAdd xs  e (LFloat 0) 
 eval (Mult xs) e =  primMult xs e (LFloat 1) 
+eval (Cond TrueC e1 e2) e =  eval e1 e
+eval (Cond FalseC e1 e2) e =  eval e2 e
 eval (Minus xs) e = primMinus xs e (LFloat 0) 
-eval _       e = LFloat 3.0
+eval _       e = error "wtf eval"
+
+
+
+-- DO NOT READ PAST THIS POINT
+-- IF YOU WANT TO KEEP YOUR SANITY
 
 primMinus :: [Expr] -> Env -> LVal -> LVal
 primMinus [] e r           = r 

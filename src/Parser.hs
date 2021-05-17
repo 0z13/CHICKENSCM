@@ -84,8 +84,16 @@ pSexp = pNumNoL <|>
 -- then IDK probably finish up
 -- do the assIgnment
 
+-- (if test-exp then-exp else-exp) 
+
 parseExprBody :: [Sexp] -> [Expr]
 parseExprBody = foldr ((:) . parse) [] 
+
+parseIfCond :: [Sexp] -> Expr
+parseIfCond [i, x, xs]  = case i of 
+   (Sym "true")  -> Cond TrueC  (parse x) (parse xs)
+   (Sym "false") -> Cond FalseC (parse x) (parse xs)
+parseIfCond _ = error "bad if statement"
 
 parse :: Sexp -> Expr 
 parse (SNum x)     = Lit x
@@ -95,6 +103,7 @@ parse (SList (x:xs))  = case x of
   (Sym "-") -> Minus $ parseExprBody xs
   (Sym "*") -> Mult $ parseExprBody xs
   (Sym  "let")  -> Abs $ parseExprBody xs
+  (Sym "if") -> parseIfCond xs
 
 testRunParser :: String -> Expr
 testRunParser inp = case parseMaybe pSexp inp of

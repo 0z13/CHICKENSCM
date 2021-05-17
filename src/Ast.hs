@@ -15,6 +15,8 @@ data Expr
         | Mult [Expr]  
         | Abs [Expr]
         | Cond Expr Expr Expr
+        | TrueC 
+        | FalseC
   deriving Show
 
 data LVal 
