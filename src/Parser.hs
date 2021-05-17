@@ -85,6 +85,10 @@ pSexp = pNumNoL <|>
 -- do the assIgnment
 
 -- (if test-exp then-exp else-exp) 
+-- equality for numbers as boolean
+-- implement negation, disjunction, conjunction
+-- desugar functions with unary minus
+-- + nested if's
 
 parseExprBody :: [Sexp] -> [Expr]
 parseExprBody = foldr ((:) . parse) [] 
